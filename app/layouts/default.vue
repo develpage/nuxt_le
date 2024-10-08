@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const userStore = useUserStore();
+const aurhStore = useAuthStore();
 </script>
 
 <template>
@@ -17,14 +17,14 @@ const userStore = useUserStore();
               Posts
             </NuxtLink>
           </li>
-          <li v-if="userStore.isUserAuth">
+          <li v-if="aurhStore.isUserAuth">
             <NuxtLink to="/posts/my">
               My Posts
             </NuxtLink>
           </li>
           <li>
             <NuxtLink
-              v-if="!userStore.isUserAuth"
+              v-if="!aurhStore.isUserAuth"
               to="/login"
             >
               Login
@@ -32,7 +32,7 @@ const userStore = useUserStore();
             <a
               v-else
               href=""
-              @click.prevent="userStore.logout"
+              @click.prevent="aurhStore.logout"
             >
               Logout
             </a>

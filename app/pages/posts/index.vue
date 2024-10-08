@@ -1,17 +1,5 @@
 <script setup lang="ts">
-import { usePostsRepository } from '~/repository/posts';
-import CreatePost from '~/components/Posts/CreatePost.vue';
-import PostsList from '~/components/Posts/PostsList.vue';
-import type { Post } from '~/types/posts';
-
-const posts = toRef(await usePostsRepository().getPostsAll());
-
-/**
- * @desc Страх?
- */
-function addPost(post: Post) {
-  posts.value = [post, ...posts.value || []];
-}
+const {data: posts, refresh} = await useAsyncData(() => useNuxtApp().$api.posts.getPostsAll());
 </script>
 
 <template>
@@ -19,7 +7,7 @@ function addPost(post: Post) {
     <h1>
       Posts Page
     </h1>
-    <CreatePost @create="addPost" />
+    <PostsCreate @create="refresh" />
     <PostsList :posts="posts" />
   </div>
 </template>

@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { usePostsRepository } from '~/repository/posts';
-const route = useRoute();
-const post = await usePostsRepository().getPost(route.params.id as string);
+const id = useRoute().params.id as string;
+const {data: post} = await useAsyncData(
+  (app) => app.$errorHanding(() => useNuxtApp().$api.posts.getPost(id)),
+  {
+    watch: [() => id]
+  }
+);
+
+// if (error.value) {
+//   throw createError({...error.value, fatal: true});
+// }
 </script>
 
 <template>
@@ -9,15 +17,21 @@ const post = await usePostsRepository().getPost(route.params.id as string);
     <h1>
       Post - {{ post?.title }}
     </h1>
+    <!-- {{ error?.statusCode }} -->
     <p>
       {{ post?.content }}
     </p>
-    <q>
-      {{ post?.User?.login || '' }}
-    </q>
     <br>
+    <PostsImages :id="id" />
+    <PostsComments :id="id" />
     <NuxtLink to="/posts">
-      Back
+      Back to posts
+    </NuxtLink>
+    <NuxtLink :to="{name: 'posts-id', params: {id: +(id as string) - 1}}"> |
+      Prev
+    </NuxtLink>
+    <NuxtLink :to="{name: 'posts-id', params: {id: +(id as string) + 1}}"> |
+      Next
     </NuxtLink>
   </div>
 </template>

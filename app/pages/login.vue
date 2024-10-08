@@ -1,22 +1,22 @@
 <script setup lang="ts">
-const userStore = useUserStore();
+const aurhStore = useAuthStore();
 
-const model = ref({
+const model = reactive({
   login: '',
   password: '',
 });
 
 async function onSubmitForm() {
   
-  const isSuccess = await useUserStore().login(unref(model));
+  const isSuccess = await aurhStore.login(model);
   if (isSuccess) {
-    useRouter().back(); // Какая-то фигня
+    document.location = '/';
   }
 }
 </script>
 
 <template>
-  <div v-if="!userStore.isUserAuth">
+  <div v-if="!aurhStore.isUserAuth">
     <h1>
       Login Page
     </h1>

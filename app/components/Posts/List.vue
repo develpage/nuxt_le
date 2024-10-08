@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { Post } from '~/types/posts';
-import PostItem from './PostItem.vue';
 
 defineProps<{
-  posts: Post[] | undefined;
+  posts: Post[] | undefined
 }>();
 </script>
 
@@ -16,7 +15,7 @@ defineProps<{
       v-for="post in posts"
       :key="post.id"
     >
-      <PostItem :post="post" />
+      <PostsItem :post="post" />
     </li>
   </ul>
 

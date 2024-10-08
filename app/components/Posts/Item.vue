@@ -2,7 +2,7 @@
 import type { Post } from '~/types/posts';
 
 defineProps<{
-  post: Post;
+  post: Post
 }>();
 </script>
 

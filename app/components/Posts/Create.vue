@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { usePostsRepository } from '~/repository/posts';
 import type { NewPost, Post } from '~/types/posts';
 
 const INITIAL_MODEL = {
@@ -9,7 +8,7 @@ const INITIAL_MODEL = {
 };
 
 const emit = defineEmits<{
-  (event: 'create', post: Post): void;
+  (event: 'create'): void;
 }>();
 
 const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef');
@@ -26,10 +25,10 @@ function dialogClose() {
 }
 
 async function handleSubmitForm() {
-  const post = await usePostsRepository().createPost({...unref(model), url: Date.now().toString()});
+  const post = await useNuxtApp().$api.posts.createPost(unref(model));
 
   if (post) {
-    emit('create', post.value as Post);
+    emit('create');
     dialogClose();
   }
 }
@@ -43,9 +42,7 @@ async function handleSubmitForm() {
     >
       Add Post
     </button>
-    <dialog
-      ref="dialogRef"
-    >
+    <dialog ref="dialogRef">
       <form @submit.prevent="handleSubmitForm">
         <input
           id="title"
@@ -53,6 +50,17 @@ async function handleSubmitForm() {
           name="title"
           type="text"
           placeholder="title"
+          minlength="1"
+          maxlength="255"
+          required
+        >
+        <br>
+        <input
+          id="url"
+          v-model="model.url"
+          name="url"
+          type="text"
+          placeholder="url"
           minlength="5"
           maxlength="255"
           required
