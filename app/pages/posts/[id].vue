@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { Post } from '~/types/posts';
+
 const id = useRoute().params.id as string;
-const {data: post} = await useAsyncData(
-  (app) => app.$errorHanding(() => useNuxtApp().$api.posts.getPost(id)),
+const {data: post, error} = await useAsyncData<Post>(
+  (nuxtApp) => nuxtApp!.$errorHandler(nuxtApp!.$api.posts.getPost(id)), // Интересно когда в колбеке useAsyncData может не быть nuxtApp
   {
     watch: [() => id]
   }
