@@ -2,15 +2,32 @@
 import type { Post } from '~/types/posts';
 
 const id = useRoute().params.id as string;
-const {data: post, error} = await useAsyncData<Post>(
+
+// 1. Реализация согласно дз
+const {data: post} = await useAsyncData<Post>(
   (nuxtApp) => nuxtApp!.$errorHandler(nuxtApp!.$api.posts.getPost(id)), // Интересно когда в колбеке useAsyncData может не быть nuxtApp
   {
     watch: [() => id]
   }
 );
 
+// 2.Можно еще передавать в плагин объект ошибки 
+// const {data: post, error} = await useAsyncData<Post>(
+//   (nuxtApp) => nuxtApp!.$api.posts.getPost(id),
+//   {
+//     watch: [() => id]
+//   }
+// );
+
 // if (error.value) {
-//   throw createError({...error.value, fatal: true});
+//   useNuxtApp().$errorHandler(error.value, {
+//     redirectUrl: '/',
+//     callback: () => {
+//       if (import.meta.client) {
+//         alert(error.value?.statusCode);
+//       }
+//     }
+//   });
 // }
 </script>
 

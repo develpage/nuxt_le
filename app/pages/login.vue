@@ -1,14 +1,12 @@
 <script setup lang="ts">
-const aurhStore = useAuthStore();
+import { useForm } from '~/composables/useForm';
 
-const model = reactive({
-  login: '',
-  password: '',
-});
+const aurhStore = useAuthStore();
+const {form, errors, onSubmit} = useForm<Record<'login' | 'password', string>>({login: '', password: ''});
 
 async function onSubmitForm() {
-  
-  const isSuccess = await aurhStore.login(model);
+  const isSuccess = await aurhStore.login({...unref(form)});
+
   if (isSuccess) {
     document.location = '/';
   }
@@ -20,24 +18,38 @@ async function onSubmitForm() {
     <h1>
       Login Page
     </h1>
-    <form @submit.prevent="onSubmitForm">
+    <form @submit.prevent="onSubmit(onSubmitForm)">
       <input
         id="login"
-        v-model="model.login"
+        v-model="form.login"
         name="login"
         type="text"
         placeholder="login"
         required
       >
       <br>
+      <span
+        v-if="errors?.login"
+        style="color: red;"
+      >
+        {{ errors.login }}
+      </span>
+      <br>
       <input
         id="password"
-        v-model="model.password"
+        v-model="form.password"
         name="password"
         type="password"
         placeholder="password"
         required
       >
+      <br>
+      <span
+        v-if="errors?.password"
+        style="color: red;"
+      >
+        {{ errors.password }}
+      </span>
       <br>
       <button type="submit">
         Submit

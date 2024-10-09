@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { NewPost, Post } from '~/types/posts';
+import { useForm } from '~/composables/useForm';
+// import type { NewPost, Post } from '~/types/posts';
 
 const INITIAL_MODEL = {
   content: '',
@@ -11,9 +12,9 @@ const emit = defineEmits<{
   (event: 'create'): void;
 }>();
 
-const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef');
+const {form, errors, onSubmit} = useForm<typeof INITIAL_MODEL>({...INITIAL_MODEL});
 
-const model = ref<NewPost>({...INITIAL_MODEL});
+const dialogRef = useTemplateRef<HTMLDialogElement>('dialogRef');
 
 function dialogOpen() {
   dialogRef.value?.showModal();
@@ -21,15 +22,21 @@ function dialogOpen() {
 
 function dialogClose() {
   dialogRef.value?.close();
-  model.value = {...INITIAL_MODEL};
+  form.value = {...INITIAL_MODEL};
 }
 
 async function handleSubmitForm() {
-  const post = await useNuxtApp().$api.posts.createPost(unref(model));
+  try {
+    const post = await useNuxtApp().$api.posts.createPost({...unref(form)});
 
-  if (post) {
-    emit('create');
-    dialogClose();
+    if (post) {
+      emit('create');
+      dialogClose();
+    }
+  } catch (error) {
+    useNuxtApp().$errorHandler(error, {
+      redirectUrl: '/login',
+    });
   }
 }
 </script>
@@ -43,38 +50,50 @@ async function handleSubmitForm() {
       Add Post
     </button>
     <dialog ref="dialogRef">
-      <form @submit.prevent="handleSubmitForm">
+      <form @submit.prevent="onSubmit(handleSubmitForm)">
         <input
           id="title"
-          v-model="model.title"
+          v-model="form.title"
           name="title"
           type="text"
           placeholder="title"
-          minlength="1"
-          maxlength="255"
-          required
         >
+        <br>
+        <span
+          v-if="errors?.title"
+          style="color: red;"
+        >
+          {{ errors.title }}
+        </span>
         <br>
         <input
           id="url"
-          v-model="model.url"
+          v-model="form.url"
           name="url"
           type="text"
           placeholder="url"
-          minlength="5"
-          maxlength="255"
-          required
         >
+        <br>
+        <span
+          v-if="errors?.url"
+          style="color: red;"
+        >
+          {{ errors.url }}
+        </span>
         <br>
         <textarea
           id="content"
-          v-model="model.content"
+          v-model="form.content"
           name="content"
           placeholder="content"
-          required
-          minlength="25"
-          maxlength="1000"
         ></textarea>
+        <br>
+        <span
+          v-if="errors?.content"
+          style="color: red;"
+        >
+          {{ errors.content }}
+        </span>
         <br>
         <button type="submit">
           Send
